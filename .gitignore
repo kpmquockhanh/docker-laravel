@@ -1,0 +1,3 @@
+docker/nginx/log/
+docker/nginx/ssl/
+.DS_Store

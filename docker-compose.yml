@@ -1,0 +1,56 @@
+version: "3.7"
+networks:
+  mynet:
+    driver: bridge
+  #Volumes
+volumes:
+  mysqldata:
+    driver: local
+services:
+  #Laravel App
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    restart: unless-stopped
+    tty: true
+    working_dir: /var/www/html
+    volumes:
+      - ./src:/var/www/html
+    networks:
+      - mynet
+  #Nginx Service
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./src:/var/www/html:rw
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/log/:/var/log/nginx/
+    networks:
+      - mynet
+  # Mysql
+  mysql:
+    container_name: mysql
+    command: mysqld --default-authentication-plugin=mysql_native_password
+    image: mysql:latest
+    volumes:
+      - mysqldata:/var/lib/mysql:rw
+    restart: unless-stopped
+    expose:
+      - 3306
+    ports:
+      - 33061:3306
+    environment:
+      MYSQL_DATABASE: hanie
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - mynet
