@@ -3,7 +3,7 @@ FROM php:7.2-fpm-alpine
 
 # Copy composer.lock and composer.json
 #COPY ./src/composer.lock ./src/composer.json /var/www/html/
-
+RUN apk add --no-cache yarn npm
 # Set working directory
 WORKDIR /var/www/html
 
@@ -30,7 +30,8 @@ RUN apk update && apk add --no-cache \
 
 # Add and Enable PHP-PDO Extenstions
 RUN docker-php-ext-install pdo pdo_mysql
-RUN docker-php-ext-enable pdo_mysql
+# Enable pdo_mysql
+#RUN docker-php-ext-enable pdo_mysql
 
 # Install PHP Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
